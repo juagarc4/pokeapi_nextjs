@@ -22,14 +22,17 @@ const HomePage: NextPage<Props> = ({ pokemons }) => {
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { data } = await pokeApi.get<PokemonListResponse>('/pokemon?limit=898')
-
-  const pokemons: SmallPokemon[] = data.results.map((pokemon, index) => ({
-    ...pokemon,
-    id: index + 1,
-    image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
-      index + 1
-    }.svg`,
-  }))
+  const pokemons: SmallPokemon[] = data.results.map((pokemon, index) => {
+    const id = index + 1
+    const imagenSVG = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${id}.svg`
+    const imagePNG = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+    const image = id < 650 ? imagenSVG : imagePNG
+    return {
+      ...pokemon,
+      id: id,
+      image: image,
+    }
+  })
 
   return {
     props: {
