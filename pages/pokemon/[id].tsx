@@ -1,17 +1,24 @@
+import { useState } from 'react'
 import type { NextPage, GetStaticProps, GetStaticPaths } from 'next'
-import { useRouter } from 'next/router'
+import { Button, Card, Container, Grid, Text } from '@nextui-org/react'
 import Image from 'next/image'
 import { Layout } from 'components/layouts'
 import { pokeApi } from 'api'
 import { Pokemon } from 'interfaces'
-import { Button, Card, Container, Grid, Text } from '@nextui-org/react'
-import Head from 'next/head'
+import { localFavorites } from 'utils'
+import { Ability } from '../../interfaces/pokemon-full'
 
 interface Props {
   pokemon: Pokemon
 }
 
 const PokemonPage: NextPage<Props> = ({ pokemon }) => {
+  const [isInFavorites, setIsInFavorites] = useState(localFavorites.existInFavorites(pokemon.id))
+  const onToggleFavorite = () => {
+    localFavorites.toggleFavorite(pokemon.id)
+    setIsInFavorites(!isInFavorites)
+  }
+
   return (
     <Layout title={pokemon.name}>
       <Grid.Container css={{ marginTop: '5px' }} gap={2}>
@@ -32,22 +39,34 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
               <Text h1 transform='capitalize'>
                 {pokemon.name}
               </Text>
-              <Button color='gradient' ghost>
-                Gardar en Favoritos
+              <Button color='gradient' ghost={!isInFavorites} onClick={onToggleFavorite}>
+                {isInFavorites ? 'En Favoritos' : 'Guardar en Favoritos'}
               </Button>
             </Card.Header>
             <Card.Body>
               <Text size={30}>Sprites</Text>
               <Container direction='row' css={{ display: 'flex', justifyContent: 'space-between' }} gap={0}>
                 <Image src={pokemon.sprites.back_default} alt={pokemon.name} width={100} height={100} />
-                <Image src={pokemon.sprites.back_shiny} alt={pokemon.name} width={100} height={100} />
                 <Image src={pokemon.sprites.front_default} alt={pokemon.name} width={100} height={100} />
+                <Image src={pokemon.sprites.back_shiny} alt={pokemon.name} width={100} height={100} />
                 <Image src={pokemon.sprites.front_shiny} alt={pokemon.name} width={100} height={100} />
               </Container>
             </Card.Body>
           </Card>
         </Grid>
       </Grid.Container>
+      <Grid xs={12}>
+        <Card>
+          <Card.Header>
+            <Text h2>Abilities</Text>
+          </Card.Header>
+          <Card.Body>
+            {pokemon.abilities.map((ab) => {
+              return <Text h3>{ab.ability.name}</Text>
+            })}
+          </Card.Body>
+        </Card>
+      </Grid>
     </Layout>
   )
 }
