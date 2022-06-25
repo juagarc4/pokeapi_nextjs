@@ -18,6 +18,7 @@ export const NoFavorites = () => {
         height={250}
         width={250}
         css={{ opacity: 0.1 }}
+        alt='No favorites'
       />
     </Container>
   )
