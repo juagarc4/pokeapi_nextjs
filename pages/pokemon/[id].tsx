@@ -1,12 +1,14 @@
 import { useState } from 'react'
+
 import type { NextPage, GetStaticProps, GetStaticPaths } from 'next'
-import { Button, Card, Container, Grid, Text } from '@nextui-org/react'
 import Image from 'next/image'
+import { Button, Card, Container, Grid, Text } from '@nextui-org/react'
+import confetti from 'canvas-confetti'
+
 import { Layout } from 'components/layouts'
 import { pokeApi } from 'api'
-import { Pokemon } from 'interfaces'
+import { Pokemon, Ability } from 'interfaces'
 import { localFavorites } from 'utils'
-import { Ability } from '../../interfaces/pokemon-full'
 
 interface Props {
   pokemon: Pokemon
@@ -17,6 +19,17 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
   const onToggleFavorite = () => {
     localFavorites.toggleFavorite(pokemon.id)
     setIsInFavorites(!isInFavorites)
+    if (isInFavorites) return
+    confetti({
+      zIndex: 999,
+      particleCount: 100,
+      spread: 160,
+      angle: -100,
+      origin: {
+        x: 1,
+        y: 0,
+      },
+    })
   }
 
   return (
@@ -62,7 +75,11 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
           </Card.Header>
           <Card.Body>
             {pokemon.abilities.map((ab) => {
-              return <Text h3>{ab.ability.name}</Text>
+              return (
+                <Text h3 key={ab.ability.name}>
+                  {ab.ability.name}
+                </Text>
+              )
             })}
           </Card.Body>
         </Card>
