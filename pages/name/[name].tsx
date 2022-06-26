@@ -7,9 +7,8 @@ import confetti from 'canvas-confetti'
 
 import { Layout } from 'components/layouts'
 import { pokeApi } from 'api'
-import { Pokemon } from 'interfaces'
-import { localFavorites } from 'utils'
-import { PokemonListResponse } from '../../interfaces/pokemon-list'
+import { Pokemon, PokemonListResponse, SmallPokemon } from 'interfaces'
+import { getPokemonInfo, localFavorites } from 'utils'
 
 interface Props {
   pokemon: Pokemon
@@ -38,12 +37,7 @@ const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
       <Grid.Container css={{ marginTop: '5px' }} gap={2}>
         <Grid xs={12} sm={4}>
           <Card hoverable css={{ padding: '30px' }}>
-            <Card.Image
-              src={pokemon.sprites.other?.dream_world.front_default || pokemon.sprites.front_default}
-              alt={pokemon.name}
-              width='100%'
-              height={200}
-            />
+            <Card.Image src={pokemon.sprites.front_default} alt={pokemon.name} width='100%' height={200} />
             <Card.Body></Card.Body>
           </Card>
         </Grid>
@@ -69,29 +63,13 @@ const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
           </Card>
         </Grid>
       </Grid.Container>
-      <Grid xs={12}>
-        <Card>
-          <Card.Header>
-            <Text h2>Abilities</Text>
-          </Card.Header>
-          <Card.Body>
-            {pokemon.abilities.map((ab) => {
-              return (
-                <Text h3 key={ab.ability.name}>
-                  {ab.ability.name}
-                </Text>
-              )
-            })}
-          </Card.Body>
-        </Card>
-      </Grid>
     </Layout>
   )
 }
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
   const { data } = await pokeApi.get<PokemonListResponse>(`/pokemon?limit=151`)
-  const pokemonNames: string[] = data.results.map((pokemon) => pokemon.name)
+  const pokemonNames: string[] = data.results.map((pokemon: SmallPokemon) => pokemon.name)
 
   return {
     paths: pokemonNames.map((name) => ({
@@ -103,10 +81,10 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { name } = params as { name: string }
-  const { data } = await pokeApi.get<Pokemon>(`/pokemon/${name}`)
+
   return {
     props: {
-      pokemon: data,
+      pokemon: await getPokemonInfo(name),
     },
   }
 }

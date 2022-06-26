@@ -6,9 +6,8 @@ import { Button, Card, Container, Grid, Text } from '@nextui-org/react'
 import confetti from 'canvas-confetti'
 
 import { Layout } from 'components/layouts'
-import { pokeApi } from 'api'
-import { Pokemon, Ability } from 'interfaces'
-import { localFavorites } from 'utils'
+import { Pokemon } from 'interfaces'
+import { localFavorites, getPokemonInfo } from 'utils'
 
 interface Props {
   pokemon: Pokemon
@@ -38,7 +37,7 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
         <Grid xs={12} sm={4}>
           <Card hoverable css={{ padding: '30px' }}>
             <Card.Image
-              src={pokemon.sprites.other?.dream_world.front_default || pokemon.sprites.front_default}
+              src={pokemon.sprites.other?.dream_world.front_default || '/no-image.png'}
               alt={pokemon.name}
               width='100%'
               height={200}
@@ -68,22 +67,6 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
           </Card>
         </Grid>
       </Grid.Container>
-      <Grid xs={12}>
-        <Card>
-          <Card.Header>
-            <Text h2>Abilities</Text>
-          </Card.Header>
-          <Card.Body>
-            {pokemon.abilities.map((ab) => {
-              return (
-                <Text h3 key={ab.ability.name}>
-                  {ab.ability.name}
-                </Text>
-              )
-            })}
-          </Card.Body>
-        </Card>
-      </Grid>
     </Layout>
   )
 }
@@ -100,10 +83,10 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { id } = params as { id: string }
-  const { data } = await pokeApi.get<Pokemon>(`/pokemon/${id}`)
+
   return {
     props: {
-      pokemon: data,
+      pokemon: await getPokemonInfo(id),
     },
   }
 }
