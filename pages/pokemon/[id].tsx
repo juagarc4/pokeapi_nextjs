@@ -88,6 +88,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       pokemon: await getPokemonInfo(id),
     },
+    revalidate: 60,
   }
 }
 export default PokemonPage
