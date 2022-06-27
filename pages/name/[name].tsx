@@ -37,7 +37,12 @@ const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
       <Grid.Container css={{ marginTop: '5px' }} gap={2}>
         <Grid xs={12} sm={4}>
           <Card hoverable css={{ padding: '30px' }}>
-            <Card.Image src={pokemon.sprites.front_default} alt={pokemon.name} width='100%' height={200} />
+            <Card.Image
+              src={pokemon.sprites.other?.dream_world.front_default || '/no-image.png'}
+              alt={pokemon.name}
+              width='100%'
+              height={200}
+            />
             <Card.Body></Card.Body>
           </Card>
         </Grid>
